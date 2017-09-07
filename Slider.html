@@ -53,29 +53,27 @@
     </head>
 
     <body>
+        <!-- div with class slider represents each slider. Atrrib 'value' is current value, options are in 'data'--> 
         <div class = "slider" value = "You" data = "How,Are,You,Today?">
-            <!--div class = "rail"></div-->
             <div class = "thumb"></div>
             <div class = "tip">0</div>
         </div>
         <div class = "slider" style = "left:20px" value = "Tue"  data = "Sun,Mon,Tue,Wed,Thu,Fri,Sat">
-            <!--div class = "rail"></div-->
             <div class = "thumb"></div>
             <div class = "tip">0</div>
         </div>
        <div class = "slider" value = "Just me" data = "Just me">
-            <!--div class = "rail"></div-->
             <div class = "thumb"></div>
             <div class = "tip">0</div>
         </div>
  
-        <!--script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script-->
         <script type="text/javascript">
             function findStop(ev){
                 var offsetX = ev.currentTarget.getAttribute("dragOffset");
+                // find the 'left' requried for thumb to follow cursor
                 var left = Math.max(Math.min(ev.clientX - offsetX, 199), 0);
                 var data = ev.currentTarget.getAttribute("data").split(",");
-
+                // find nearest stop where thumb should rest
                 var stopSize = 200 / (data.length);
                 var index = Math.floor(left / stopSize);
                 var stop = {
@@ -86,6 +84,7 @@
                 }
                 return stop;
             }
+            
             function leftForValue(slider){
                 var data = slider.getAttribute("data").split(",");
                 var value = slider.getAttribute("value");
@@ -97,6 +96,7 @@
                 }
                 return left;
             }
+            
             function makeMarkers(slider){
                 var markers = document.createElement("table");
                 var row = document.createElement("tr");
@@ -117,12 +117,12 @@
                 var offsetX = ev.clientX - leftForValue(slider);
                 // store offset in the slider element
                 slider.setAttribute("dragOffset", offsetX);
-                // setup events
+                // setup events on slider (not on thumb - to avoid dropping out when cursor moves fast)
                 slider.addEventListener("mousemove", trackMove);
                 slider.addEventListener("mouseup", endMove);
                 slider.addEventListener("mouseleave", endMove);
-                //console.log("start", ev, offsetX);
             }
+            
             function trackMove(ev){
                 var stop = findStop(ev);
                 var thumb = ev.currentTarget.querySelector(".thumb");
@@ -130,10 +130,10 @@
                 thumb.style.left = stop.left + "px";
                 tip.style.left = stop.left + "px";
                 tip.textContent = stop.value;
-                //console.log("moving", ev, ev.currentTarget);
             }
+            
             function endMove(ev){
-                // remove the event handlers
+                // remove the event handlers on slider
                 ev.currentTarget.removeEventListener("mousemove", trackMove);
                 ev.currentTarget.removeEventListener("mouseup", endMove);
                 ev.currentTarget.removeEventListener("mouseleave", endMove);
@@ -145,22 +145,20 @@
                 var tip = ev.currentTarget.querySelector(".tip");
                 thumb.style.left = stop.stopLeft + "px";
                 tip.style.left = stop.stopLeft + "px";
-                //console.log("end", ev);
             }
-            // main body
 
+            // main body
             var sliders = document.querySelectorAll(".slider");
             for (var i = 0; i < sliders.length; i++){
                 sliders[i].appendChild(makeMarkers(sliders[i]));
                 var left = leftForValue(sliders[i]);
-                //console.log(left);
                 // set initial thumb position
                 var thumb = sliders[i].querySelector(".thumb");
                 var tip = sliders[i].querySelector(".tip");
                 thumb.style.left = left + "px";
                 tip.style.left = left + "px";
                 tip.textContent = sliders[i].getAttribute("value");
-                // set event
+                // set event to start dragging thumb
                 thumb.addEventListener("mousedown", startMove);
             }
         </script>
