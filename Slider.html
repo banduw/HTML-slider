@@ -1,166 +1,29 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel="stylesheet" type="text/css" href="Slider.css">
         <style>
-            .slider {
-                position: relative;
-                height: 50px;
-                width: 205px;
-                border-radius: 5px;
-                background-color: lightcyan;
-                margin: 10px;
-            }
-            .thumb {
-                height: 20px;
-                width: 20px;
-                border-radius: 10px;
-                background-color: blue;
-                position: absolute;
-                top: 25px;
-                z-index: 1;
-            }
-            .thumb:active {
-                background-color: green;
-            }
-            .tip {
-                border: 1px solid red;
-                color: red;
-                position: absolute;
-                top: 1px;
-                padding: 2px;
-                border-radius: 2px;
-                visibility: hidden;
-            }
-            .thumb:active + .tip {
-                visibility: visible;
-            }
-            .slider table {
-                width: 200px;
-                height: 25px;
-                position: absolute;
-                top: 25px;
-                border-collapse: collapse;
-            }
-            .slider tr:last-child {
-                border-top: 1px dotted red;
-            }
-            .slider td:not(td:last-child) {
-                border-right: 1px solid lightgrey;
-                padding: 0px;
-                margin: 0px;
-            }
         </style>
     </head>
 
     <body>
         <!-- div with class slider represents each slider. Atrrib 'value' is current value, options are in 'data'--> 
-        <div class = "slider" value = "You" data = "How,Are,You,Today?">
-            <div class = "thumb"></div>
-            <div class = "tip">0</div>
-        </div>
-        <div class = "slider" style = "left:20px" value = "Tue"  data = "Sun,Mon,Tue,Wed,Thu,Fri,Sat">
-            <div class = "thumb"></div>
-            <div class = "tip">0</div>
-        </div>
-       <div class = "slider" value = "Just me" data = "Just me">
-            <div class = "thumb"></div>
-            <div class = "tip">0</div>
-        </div>
+        <div value = "You" data = "How,Are,You,Today?"></div>
+        <div style = "left:20px" value = "Tue"  data = "Sun,Mon,Tue,Wed,Thu,Fri,Sat"></div>
+        <div value = "Just me" data = "Just me"></div>
  
+        <script src = "slider.js"></script>
         <script type="text/javascript">
-            function findStop(ev){
-                var offsetX = ev.currentTarget.getAttribute("dragOffset");
-                // find the 'left' requried for thumb to follow cursor
-                var left = Math.max(Math.min(ev.clientX - offsetX, 199), 0);
-                var data = ev.currentTarget.getAttribute("data").split(",");
-                // find nearest stop where thumb should rest
-                var stopSize = 200 / (data.length);
-                var index = Math.floor(left / stopSize);
-                var stop = {
-                    index : index,
-                    left : left,
-                    stopLeft : (index * stopSize) + (stopSize / 2) - 10,
-                    value : data[ index ]
-                }
-                return stop;
-            }
-            
-            function leftForValue(slider){
-                var data = slider.getAttribute("data").split(",");
-                var value = slider.getAttribute("value");
-                var index = data.indexOf(value);
-                var left = 0;
-                if (index >= 0){
-                    var stopSize = 200 / (data.length);
-                    left = (index * stopSize) + (stopSize / 2) - 10;
-                }
-                return left;
-            }
-            
-            function makeMarkers(slider){
-                var markers = document.createElement("table");
-                var row = document.createElement("tr");
-                var data = slider.getAttribute("data").split(",");
-                for (var i = 0; i < data.length; i++){
-                    var cell = document.createElement("td");
-                    cell.style.width = (100 / data.length)+ "%";
-                    row.appendChild(cell);
-                }
-                markers.appendChild(row);
-                var clone = row.cloneNode(true);
-                markers.appendChild(clone);
-                return markers;
-            }
-
-            function startMove(ev){
-                var slider = ev.currentTarget.parentNode;
-                var offsetX = ev.clientX - leftForValue(slider);
-                // store offset in the slider element
-                slider.setAttribute("dragOffset", offsetX);
-                // setup events on slider (not on thumb - to avoid dropping out when cursor moves fast)
-                slider.addEventListener("mousemove", trackMove);
-                slider.addEventListener("mouseup", endMove);
-                slider.addEventListener("mouseleave", endMove);
-            }
-            
-            function trackMove(ev){
-                var stop = findStop(ev);
-                var thumb = ev.currentTarget.querySelector(".thumb");
-                var tip = ev.currentTarget.querySelector(".tip");
-                thumb.style.left = stop.left + "px";
-                tip.style.left = stop.left + "px";
-                tip.textContent = stop.value;
-            }
-            
-            function endMove(ev){
-                // remove the event handlers on slider
-                ev.currentTarget.removeEventListener("mousemove", trackMove);
-                ev.currentTarget.removeEventListener("mouseup", endMove);
-                ev.currentTarget.removeEventListener("mouseleave", endMove);
-
-                var stop = findStop(ev);
-                // jump to stop
-                ev.currentTarget.setAttribute("value", stop.value);
-                var thumb = ev.currentTarget.querySelector(".thumb");
-                var tip = ev.currentTarget.querySelector(".tip");
-                thumb.style.left = stop.stopLeft + "px";
-                tip.style.left = stop.stopLeft + "px";
-            }
 
             // main body
-            var sliders = document.querySelectorAll(".slider");
-            for (var i = 0; i < sliders.length; i++){
-                sliders[i].appendChild(makeMarkers(sliders[i]));
-                var left = leftForValue(sliders[i]);
-                // set initial thumb position
-                var thumb = sliders[i].querySelector(".thumb");
-                var tip = sliders[i].querySelector(".tip");
-                thumb.style.left = left + "px";
-                tip.style.left = left + "px";
-                tip.textContent = sliders[i].getAttribute("value");
-                // set event to start dragging thumb
-                thumb.addEventListener("mousedown", startMove);
+            function callMe(sliderElement, value){
+                console.log("calMe", value);
             }
+            var sliderElements = document.querySelectorAll("div");
+            for (var i = 0; i < sliderElements.length; i++){
+                new Slider(sliderElements[i], callMe);
+            }
+            // use Slider.clear() to clar events when done with the slider.
         </script>
     </body>
 </html>
