@@ -19,18 +19,21 @@
     background-color: green;
     transition: none;
 }
+.slider .tip-holder {
+    position: absolute;
+    top: 1px;
+    width: 100px;
+    text-align: center;
+}
 .slider .tip {
     border: 1px solid red;
     color: red;
-    position: absolute;
-    top: 1px;
-    width: 60px;
-    text-align: center;
+    display: inline;
     padding: 2px;
     border-radius: 2px;
     visibility: hidden;
 }
-.slider .thumb:active + .tip {
+.slider:active .tip {
     visibility: visible;
 }
 .slider table {

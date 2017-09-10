@@ -20,7 +20,10 @@ function Slider(thisSlider, sliderCallback){
         slider.appendChild(thumb);
         tip = document.createElement("div");
         tip.classList.add("tip");
-        slider.appendChild(tip);
+        tipHolder = document.createElement("div");
+        tipHolder.classList.add("tip-holder");
+        tipHolder.appendChild(tip);
+        slider.appendChild(tipHolder);
     }
 
     function update(val){
@@ -35,7 +38,7 @@ function Slider(thisSlider, sliderCallback){
         }
         //console.log(val,index,left);
         thumb.style.left = (left - 10) + "px";
-        tip.style.left = (left - 30) + "px";
+        tipHolder.style.left = (left - 50) + "px";
         tip.textContent = value;
     }
 
@@ -74,6 +77,7 @@ function Slider(thisSlider, sliderCallback){
     var slider = thisSlider;
     var thumb; // to hold thumb element
     var tip; // to hold tip element
+    var tipHolder; // to hold and center the tip
     var callback = sliderCallback;
 
     // members
