@@ -9,15 +9,15 @@ function Slider(thisSlider, sliderCallback){
             row.appendChild(cell);
         }
         markers.appendChild(row);
-        var clone = row.cloneNode(true);
-        markers.appendChild(clone);
         slider.appendChild(markers);
     }
 
     function thumbAndTip(){
-        thumb = document.createElement("div");
-        thumb.classList.add("thumb");
-        slider.appendChild(thumb);
+        input = document.createElement("input");
+        input.max = 200 - 1;
+        input.min = 0;
+        input.type = "range";
+        slider.appendChild(input);
         tip = document.createElement("div");
         tip.classList.add("tip");
         tipHolder = document.createElement("div");
@@ -36,36 +36,21 @@ function Slider(thisSlider, sliderCallback){
             // initialization
             left = stopLeft;
         }
-        //console.log(val,index,left);
-        thumb.style.left = (left - 10) + "px";
         tipHolder.style.left = (left - 50) + "px";
         tip.textContent = value;
     }
 
-    function startMove(ev){
-        // store offset of thumb
-        dragOffset = ev.clientX - left;
-        // setup events on slider (not on thumb - to avoid dropping out when cursor moves fast)
-        slider.addEventListener("mousemove", trackMove);
-        slider.addEventListener("mouseup", endMove);
-        slider.addEventListener("mouseleave", endMove);
-    }
-    
     function trackMove(ev){
-        // find the 'left' requried for thumb to follow cursor
-        left = Math.max(Math.min(ev.clientX - dragOffset, 199), 0);
+        // find the 'left' requried for tip to follow cursor
+        left = Number(input.value);
         update();
     }
     
     function endMove(ev){
-        // remove the event handlers on slider
-        ev.currentTarget.removeEventListener("mousemove", trackMove);
-        ev.currentTarget.removeEventListener("mouseup", endMove);
-        ev.currentTarget.removeEventListener("mouseleave", endMove);
-
         // jump to stop
-        left = stopLeft;
+        left = Number(input.value);
         update();
+        input.value = stopLeft;
         slider.setAttribute("value", value);
         callback(slider, value);
     }
@@ -75,7 +60,7 @@ function Slider(thisSlider, sliderCallback){
     }
 
     var slider = thisSlider;
-    var thumb; // to hold thumb element
+    var input; // to hold input range element
     var tip; // to hold tip element
     var tipHolder; // to hold and center the tip
     var callback = sliderCallback;
@@ -95,5 +80,6 @@ function Slider(thisSlider, sliderCallback){
     // set initial thumb position
     update( slider.getAttribute( "value" ) );
     // set event to start dragging thumb
-    thumb.addEventListener("mousedown", startMove);
+    input.addEventListener("input", trackMove);
+    input.addEventListener("change", endMove);
 }
